@@ -72,6 +72,30 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Resolve environment secrets
+        env:
+          DEV_DB_PASSWORD:  ${{ secrets.DEV_DB_PASSWORD }}
+          DEV_JWT_SECRET:   ${{ secrets.DEV_JWT_SECRET }}
+          QA_DB_PASSWORD:   ${{ secrets.QA_DB_PASSWORD }}
+          QA_JWT_SECRET:    ${{ secrets.QA_JWT_SECRET }}
+          PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          PROD_JWT_SECRET:  ${{ secrets.PROD_JWT_SECRET }}
+        run: |
+          case "${{ env.TARGET_ENV }}" in
+            dev)
+              echo "TF_DB_PASSWORD=${DEV_DB_PASSWORD}"   >> $GITHUB_ENV
+              echo "TF_JWT_SECRET=${DEV_JWT_SECRET}"     >> $GITHUB_ENV
+              ;;
+            qa)
+              echo "TF_DB_PASSWORD=${QA_DB_PASSWORD}"    >> $GITHUB_ENV
+              echo "TF_JWT_SECRET=${QA_JWT_SECRET}"      >> $GITHUB_ENV
+              ;;
+            prod)
+              echo "TF_DB_PASSWORD=${PROD_DB_PASSWORD}"  >> $GITHUB_ENV
+              echo "TF_JWT_SECRET=${PROD_JWT_SECRET}"    >> $GITHUB_ENV
+              ;;
+          esac
+
       - name: Terraform Format Check
         id: fmt
         run: terraform fmt -check -recursive
@@ -90,8 +114,8 @@ jobs:
         run: |
           terraform plan \
             -var="aws_region=${{ env.AWS_REGION }}" \
-            -var="db_password=${{ secrets[format('{0}_DB_PASSWORD', upper(env.TARGET_ENV))] }}" \
-            -var="jwt_secret=${{ secrets[format('{0}_JWT_SECRET', upper(env.TARGET_ENV))] }}" \
+            -var="db_password=${{ env.TF_DB_PASSWORD }}" \
+            -var="jwt_secret=${{ env.TF_JWT_SECRET }}" \
             -var="github_org=${{ vars.GH_ORG }}" \
             -out=tfplan \
             -no-color
@@ -191,6 +215,30 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Resolve environment secrets
+        env:
+          DEV_DB_PASSWORD:  ${{ secrets.DEV_DB_PASSWORD }}
+          DEV_JWT_SECRET:   ${{ secrets.DEV_JWT_SECRET }}
+          QA_DB_PASSWORD:   ${{ secrets.QA_DB_PASSWORD }}
+          QA_JWT_SECRET:    ${{ secrets.QA_JWT_SECRET }}
+          PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          PROD_JWT_SECRET:  ${{ secrets.PROD_JWT_SECRET }}
+        run: |
+          case "${{ env.TARGET_ENV }}" in
+            dev)
+              echo "TF_DB_PASSWORD=${DEV_DB_PASSWORD}"   >> $GITHUB_ENV
+              echo "TF_JWT_SECRET=${DEV_JWT_SECRET}"     >> $GITHUB_ENV
+              ;;
+            qa)
+              echo "TF_DB_PASSWORD=${QA_DB_PASSWORD}"    >> $GITHUB_ENV
+              echo "TF_JWT_SECRET=${QA_JWT_SECRET}"      >> $GITHUB_ENV
+              ;;
+            prod)
+              echo "TF_DB_PASSWORD=${PROD_DB_PASSWORD}"  >> $GITHUB_ENV
+              echo "TF_JWT_SECRET=${PROD_JWT_SECRET}"    >> $GITHUB_ENV
+              ;;
+          esac
+
       - name: Terraform Init
         run: terraform init -backend-config=backend.tfvars
 
@@ -198,8 +246,8 @@ jobs:
         run: |
           terraform destroy \
             -var="aws_region=${{ env.AWS_REGION }}" \
-            -var="db_password=${{ secrets[format('{0}_DB_PASSWORD', upper(env.TARGET_ENV))] }}" \
-            -var="jwt_secret=${{ secrets[format('{0}_JWT_SECRET', upper(env.TARGET_ENV))] }}" \
+            -var="db_password=${{ env.TF_DB_PASSWORD }}" \
+            -var="jwt_secret=${{ env.TF_JWT_SECRET }}" \
             -var="github_org=${{ vars.GH_ORG }}" \
             -auto-approve \
             -no-color
