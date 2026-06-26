@@ -144,7 +144,7 @@ data "aws_iam_policy_document" "repo2_assume_role" {
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.github.arn]
+      identifiers = [aws_iam_openid_connect_provider.github_actions.arn]
     }
 
     condition {
