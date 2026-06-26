@@ -63,8 +63,7 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
         "repo:${var.github_org}/zen-pharma-backend:ref:refs/heads/main",
         "repo:${var.github_org}/zen-pharma-backend:ref:refs/heads/develop",
         "repo:${var.github_org}/zen-pharma-backend-lab1:ref:refs/heads/develop",
-        "repo:${var.github_org}/zen-infra:ref:refs/heads/main",
-
+        
     
       ]
     }
@@ -131,5 +130,47 @@ resource "aws_iam_policy" "github_actions_ci_policy" {
 resource "aws_iam_role_policy_attachment" "github_actions_ci_policy_attachment" {
   role       = aws_iam_role.github_actions_ci.name
   policy_arn = aws_iam_policy.github_actions_ci_policy.arn
+}
+
+
+
+##########################################
+# Repo 2 Role
+##########################################
+
+data "aws_iam_policy_document" "repo2_assume_role" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.github.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "token.actions.githubusercontent.com:sub"
+      values = [
+        "repo:Deepthi-mygit/zen-infra:ref:refs/heads/main"
+      ]
+    }
+  }
+}
+
+resource "aws_iam_role" "repo2" {
+  name               = "repo2-github-role"
+  assume_role_policy = data.aws_iam_policy_document.repo2_assume_role.json
+}
+
+
+resource "aws_iam_role_policy_attachment" "repo2_ec2" {
+  role       = aws_iam_role.repo2.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
