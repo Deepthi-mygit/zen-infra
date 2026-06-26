@@ -132,3 +132,46 @@ resource "aws_iam_role_policy_attachment" "github_actions_ci_policy_attachment" 
 }
 
 
+
+
+#IAM Role Trust Policy
+
+resource "aws_iam_role" "github_role_infra" {
+  name = "github-actions-role"
+
+  assume_role_policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "arn:aws:iam::326804802556:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+                },
+                "StringLike": {
+                    "token.actions.githubusercontent.com:sub": [
+                        "repo:Deepthi-mygit/zen-infra:ref:refs/heads/main",
+                        "repo:Deepthi-mygit/zen-infra:ref:refs/heads/develop"
+                    ]
+                }
+            }
+        }
+    ]
+})
+}
+
+
+
+
+
+
+
+
+resource "aws_iam_role_policy_attachment" "attach_admin" {
+  role       = aws_iam_role.github_role_infra.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
