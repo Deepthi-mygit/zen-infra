@@ -152,7 +152,7 @@ resource "aws_iam_role" "github_role" {
         }
 
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:Deepthi-mygit/my-repo:*"
+          "token.actions.githubusercontent.com:sub" = "repo:Deepthi-mygit/zen-infra:*"
         }
       }
     }]
