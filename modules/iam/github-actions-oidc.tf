@@ -158,7 +158,7 @@ data "aws_iam_policy_document" "repo2_assume_role" {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
       values = [
-        "repo:${var.github_org}/zen-infra:ref:refs/heads/main"
+        "repo:${var.github_org}/zen-infra:*"
       ]
     }
   }
