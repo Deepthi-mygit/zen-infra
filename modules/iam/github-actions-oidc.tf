@@ -169,55 +169,10 @@ resource "aws_iam_role" "repo2" {
   assume_role_policy = data.aws_iam_policy_document.repo2_assume_role.json
 }
 
-
-
-
-resource "aws_iam_policy" "github_actions_ci_policy2" {
-  name        = "github-actions-policy2"
-  description = "Allow GitHub Actions CI to push images to ECR and read EKS cluster info"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "ECRAuth"
-        Effect = "Allow"
-        Action = ["ecr:GetAuthorizationToken"]
-        Resource = "*"
-      },
-      {
-        Sid    = "ECRPush"
-        Effect = "Allow"
-        Action = [
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchGetImage",
-          "ecr:PutImage",
-          "ecr:InitiateLayerUpload",
-          "ecr:UploadLayerPart",
-          "ecr:CompleteLayerUpload",
-          "ecr:DescribeRepositories",
-          "ecr:ListImages",
-          "ecr:DescribeImages",
-        ]
-        # Allow all ECR repos in this account (role is already scoped to specific GitHub repos via trust policy)
-        Resource = "arn:aws:ecr:*:${var.aws_account_id}:repository/*"
-      },
-      {
-        Sid    = "EKSRead"
-        Effect = "Allow"
-        Action = [
-          "eks:DescribeCluster",
-          "eks:ListClusters",
-        ]
-        Resource = "*"
-      },
-    ]
-  })
-}
-
-
-resource "aws_iam_role_policy_attachment" "github_actions_ci_policy_attachment2" {
+resource "aws_iam_role_policy_attachment" "admin" {
   role       = aws_iam_role.repo2.name
-  policy_arn = aws_iam_policy.github_actions_ci_policy2.arn
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
+
+
+
