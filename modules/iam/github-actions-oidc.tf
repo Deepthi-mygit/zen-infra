@@ -37,8 +37,8 @@
 }*/
 
 data "aws_iam_openid_connect_provider" "github_actions" {
-  #arn = "arn:aws:iam::326804802556:oidc-provider/token.actions.githubusercontent.com"
-  url = "https://token.actions.githubusercontent.com"
+  arn = "arn:aws:iam::326804802556:oidc-provider/token.actions.githubusercontent.com"
+  #url = "https://token.actions.githubusercontent.com"
 }
 
 
