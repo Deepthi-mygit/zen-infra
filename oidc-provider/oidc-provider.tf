@@ -19,7 +19,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 # GitHub Actions OIDC provider — one per AWS account, shared across all repos
-/*resource "aws_iam_openid_connect_provider" "github_actions" {
+resource "aws_iam_openid_connect_provider" "github_actions" {
   url = "https://token.actions.githubusercontent.com"
 
   client_id_list = ["sts.amazonaws.com"]
@@ -34,12 +34,9 @@
     Name    = "github-actions-oidc-provider"
     Project = var.project
   }
-}*/
-
-data "aws_iam_openid_connect_provider" "github_actions" {
-  arn = "arn:aws:iam::326804802556:oidc-provider/token.actions.githubusercontent.com"
-  #url = "https://token.actions.githubusercontent.com"
 }
+
+
 
 
 # Trust policy — restricts which repos and branches can assume this role
@@ -50,8 +47,8 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
 
     principals {
       type        = "Federated"
-      #identifiers = [aws_iam_openid_connect_provider.github_actions.arn]
-      identifiers = [data.aws_iam_openid_connect_provider.github_actions.arn]
+      identifiers = [aws_iam_openid_connect_provider.github_actions.arn]
+      
 
     }
 
@@ -153,8 +150,8 @@ data "aws_iam_policy_document" "repo2_assume_role" {
 
     principals {
       type        = "Federated"
-      #identifiers = [aws_iam_openid_connect_provider.github_actions.arn]
-      identifiers = [data.aws_iam_openid_connect_provider.github_actions.arn]
+      identifiers = [aws_iam_openid_connect_provider.github_actions.arn]
+      #identifiers = [data.aws_iam_openid_connect_provider.github_actions.arn]
     }
 
     condition {
