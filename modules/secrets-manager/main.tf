@@ -1,5 +1,5 @@
 resource "aws_secretsmanager_secret" "db_credentials" {
-  name                    = "/pharma/${var.env}/db-credentials"
+  name                    = "/pharma/${var.env}/db-credentials-new"
   description             = "Database credentials for the pharma ${var.env} environment"
   recovery_window_in_days = 0
 
@@ -19,7 +19,7 @@ resource "aws_secretsmanager_secret_version" "db_credentials" {
 }
 
 resource "aws_secretsmanager_secret" "jwt_secret" {
-  name                    = "/pharma/${var.env}/jwt-secret"
+  name                    = "/pharma/${var.env}/jwt-secret-new"
   description             = "JWT signing secret for the pharma ${var.env} environment"
   recovery_window_in_days = 0
 
